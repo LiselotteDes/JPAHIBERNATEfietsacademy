@@ -35,7 +35,7 @@ public class JpaDocentRepositoryTest {
 		// Je specifieert een uit te voeren SQL statement met de method createNativeQuery.
 		entityManager.createNativeQuery("insert into docenten("
 				+ "voornaam, familienaam, wedde, emailadres, geslacht)"
-				+ "values('jean', 'smits', 1000, 'jean.smits@fietsacademy.be', 0)")
+				+ "values('jean', 'smits', 1000, 'jean.smits@fietsacademy.be', 'MAN')")
 		// Je voert dit statement uit met method executeUpdate, als dit een insert/update/delete statment is (retourneert # aangepaste entities)
 		.executeUpdate();
 		return ((Number) entityManager
@@ -51,7 +51,7 @@ public class JpaDocentRepositoryTest {
 	}
 	private long idVanNieuweVrouw() {
 		entityManager.createNativeQuery("insert into docenten(voornaam, familienaam, wedde, emailadres, geslacht)"
-				+ "values('jeanine', 'smits', 1000, 'jeanine.smits@fietsacademy.be',1)").executeUpdate();
+				+ "values('jeanine', 'smits', 1000, 'jeanine.smits@fietsacademy.be','VROUW')").executeUpdate();
 		return ((Number) entityManager.createNativeQuery("select id from docenten where emailadres='jeanine.smits@fietsacademy.be'")
 				.getSingleResult()).longValue();
 	}

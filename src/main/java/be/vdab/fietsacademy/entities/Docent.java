@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -33,6 +35,8 @@ public class Docent implements Serializable {
 	private String familienaam;
 	private BigDecimal wedde;
 	private String emailAdres;
+	// Geeft aan dat bij de variabele een varchar kolom hoort: De kolom waarde MAN hoort bij de enum waarde MAN, idem voor VROUW.
+	@Enumerated(EnumType.STRING)
 	private Geslacht geslacht;
 	public long getId() {
 		return id;
