@@ -1,9 +1,8 @@
 package be.vdab.fietsacademy.repositories;
 
-import static org.junit.Assert.fail;
-
 import java.sql.Connection;
 import java.sql.SQLException;
+
 import javax.sql.DataSource;
 
 import org.junit.Test;
