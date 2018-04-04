@@ -31,4 +31,20 @@ public class Docent implements Serializable {
 	private String familienaam;
 	private BigDecimal wedde;
 	private String emailAdres;
+	public long getId() {
+		return id;
+	}
+	public String getVoornaam() {
+		return voornaam;
+	}
+	public String getFamilienaam() {
+		return familienaam;
+	}
+	public BigDecimal getWedde() {
+		return wedde;
+	}
+	public String getEmailAdres() {
+		return emailAdres;
+	}
+	
 }
