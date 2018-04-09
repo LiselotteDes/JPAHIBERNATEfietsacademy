@@ -10,9 +10,9 @@ import be.vdab.fietsacademy.entities.Docent;
 
 @Repository
 class JpaDocentRepository implements DocentRepository {
-	private final EntityManager entityManager;
+	private final EntityManager manager;
 	JpaDocentRepository(EntityManager entityManager) {
-		this.entityManager = entityManager;
+		this.manager = entityManager;
 	}
 	@Override
 	public Optional<Docent> read(long id) {
@@ -21,6 +21,6 @@ class JpaDocentRepository implements DocentRepository {
 		 * De 1° parameter is het type van de op te zoeken entity.
 		 * De 2° parameter is de primary key waarde van de op te zoeken entity.
 		 */
-		return Optional.ofNullable(entityManager.find(Docent.class, id));
+		return Optional.ofNullable(manager.find(Docent.class, id));
 	}
 }
