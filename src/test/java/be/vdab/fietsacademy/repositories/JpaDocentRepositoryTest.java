@@ -99,4 +99,24 @@ public class JpaDocentRepositoryTest {
 				.setParameter("id", autoNumberId)
 				.getSingleResult());
 	}
+	@Test
+	public void delete() {
+		// Eerst een docent toevoegen, id opslaan, om hem dan te verwijderen.
+		long id = idVanNieuweMan();
+		repository.delete(id);
+		/*
+		 * Je hebt op de vorige regel de docent verwijderd.
+		 * De EntityManager voert verwijderingen niet onmiddelijk uit, maar spaart die op tot juist voor de commit van de transactie.
+		 * Hij stuurt dan alle opgespaarde verwijderingen in één keer naar de database, via JDBC batch updates.
+		 * Dit verhoogt de performantie.
+		 * In deze test is het WEL nodig dat de docent onmiddelijk verwijderd wordt,
+		 * zodat we de correcte werking van onze delete method kunnen testen.
+		 * Je voert de flush method uit die gevraagde verwijderingen onmiddelijk uitvoert.
+		 */
+		manager.flush();
+		// Als het verwijderen gelukt is, zijn er nog 0 docenten met het verwijderde id.
+		assertEquals(0, ((Number) manager.createNativeQuery("select count(*) from docenten where id = :id")
+				.setParameter("id", id)
+				.getSingleResult()).longValue());
+	}
 }

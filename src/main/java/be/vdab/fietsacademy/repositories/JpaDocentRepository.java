@@ -28,4 +28,13 @@ class JpaDocentRepository implements DocentRepository {
 //		throw new UnsupportedOperationException();
 		manager.persist(docent);
 	}
+	@Override
+	public void delete(long id) {
+//		throw new UnsupportedOperationException();
+		
+		// Je verwijdert een entity in twee stappen: je leest eerst de te verwijderen entity.
+		read(id)
+			// Je voert de EntityManager method remove uit en geeft die entity mee als parameter.
+			.ifPresent(docent -> manager.remove(docent));
+	}
 }
