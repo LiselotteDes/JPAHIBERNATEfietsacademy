@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 
 import javax.persistence.EntityManager;
@@ -118,5 +119,28 @@ public class JpaDocentRepositoryTest {
 		assertEquals(0, ((Number) manager.createNativeQuery("select count(*) from docenten where id = :id")
 				.setParameter("id", id)
 				.getSingleResult()).longValue());
+	}
+	@Test
+	public void findAll() {
+		// *** Test dat alle entities gelezen worden ***
+		idVanNieuweMan();
+		List<Docent> docenten = repository.findAll();
+		long aantalDocenten = ((Number) manager.createNativeQuery("select count(*) from docenten")
+				.getSingleResult()).longValue();
+		assertEquals(aantalDocenten, docenten.size());
+		// *** Test of de docenten op wedde gesorteerd zijn ***
+		BigDecimal vorigeWedde = BigDecimal.ZERO;
+		for (Docent docent : docenten) {
+			assertTrue(docent.getWedde().compareTo(vorigeWedde) >= 0);
+			vorigeWedde = docent.getWedde();
+		}
+	}
+	@Test
+	public void findByWeddeBetween() {
+		idVanNieuweMan();
+		List<Docent> docenten = repository.findByWeddeBetween(BigDecimal.valueOf(1_000), BigDecimal.valueOf(2_000));
+		long aantalDocenten = ((Number) manager.createNativeQuery("select count(*) from docenten where wedde between 1000 and 2000")
+				.getSingleResult()).longValue();
+		assertEquals(aantalDocenten, docenten.size());
 	}
 }

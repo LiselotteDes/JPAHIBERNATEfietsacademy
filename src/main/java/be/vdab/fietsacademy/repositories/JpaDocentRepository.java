@@ -1,5 +1,7 @@
 package be.vdab.fietsacademy.repositories;
 
+import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 
 import javax.persistence.EntityManager;
@@ -36,5 +38,15 @@ class JpaDocentRepository implements DocentRepository {
 		read(id)
 			// Je voert de EntityManager method remove uit en geeft die entity mee als parameter.
 			.ifPresent(docent -> manager.remove(docent));
+	}
+	@Override
+	public List<Docent> findAll() {
+//		throw new UnsupportedOperationException();
+		
+		return manager.createQuery("select d from Docent d order by d.wedde", Docent.class).getResultList();
+	}
+	@Override
+	public List<Docent> findByWeddeBetween(BigDecimal van, BigDecimal tot) {
+		throw new UnsupportedOperationException();
 	}
 }
