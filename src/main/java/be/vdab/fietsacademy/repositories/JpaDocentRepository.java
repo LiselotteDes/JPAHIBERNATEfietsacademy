@@ -47,6 +47,11 @@ class JpaDocentRepository implements DocentRepository {
 	}
 	@Override
 	public List<Docent> findByWeddeBetween(BigDecimal van, BigDecimal tot) {
-		throw new UnsupportedOperationException();
+//		throw new UnsupportedOperationException();
+		return manager
+				.createQuery("select d from Docent d where d.wedde between :van and :tot", Docent.class)	// retourneert TypedQuery<Docent>
+				.setParameter("van", van)																	// retourneert TypedQuery<Docent>
+				.setParameter("tot", tot)																	// retourneert TypedQuery<Docent>
+				.getResultList();																			// retourneert List<Docent>
 	}
 }

@@ -139,8 +139,16 @@ public class JpaDocentRepositoryTest {
 	public void findByWeddeBetween() {
 		idVanNieuweMan();
 		List<Docent> docenten = repository.findByWeddeBetween(BigDecimal.valueOf(1_000), BigDecimal.valueOf(2_000));
+		// *** Juiste aantal ***
 		long aantalDocenten = ((Number) manager.createNativeQuery("select count(*) from docenten where wedde between 1000 and 2000")
 				.getSingleResult()).longValue();
 		assertEquals(aantalDocenten, docenten.size());
+		// *** Elke wedde w voldoet aan: 1000 <= w <= 2000
+		BigDecimal duizend = BigDecimal.valueOf(1_000);
+		BigDecimal tweeduizend = BigDecimal.valueOf(2_000);
+		docenten.forEach(docent -> {
+			assertTrue(docent.getWedde().compareTo(duizend) >= 0);
+			assertTrue(docent.getWedde().compareTo(tweeduizend) <= 0);
+		});
 	}
 }
