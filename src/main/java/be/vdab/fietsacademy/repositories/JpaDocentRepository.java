@@ -44,14 +44,17 @@ class JpaDocentRepository implements DocentRepository {
 	@Override
 	public List<Docent> findAll() {
 //		throw new UnsupportedOperationException();
-		
-		return manager.createQuery("select d from Docent d order by d.wedde", Docent.class).getResultList();
+		return manager
+				.createQuery("select d from Docent d order by d.wedde", Docent.class)	// retourneert TypedQuery<Docent>
+				.getResultList();														// retourneert List<Docent>
 	}
 	@Override
 	public List<Docent> findByWeddeBetween(BigDecimal van, BigDecimal tot) {
 //		throw new UnsupportedOperationException();
 		return manager
-				.createQuery("select d from Docent d where d.wedde between :van and :tot", Docent.class)	// retourneert TypedQuery<Docent>
+//				.createQuery("select d from Docent d where d.wedde between :van and :tot", Docent.class)	// retourneert TypedQuery<Docent>
+				// Met een Named query:
+				.createNamedQuery("Docent.findByWeddeBetween", Docent.class)								// retourneert TypedQuery<Docent>
 				.setParameter("van", van)																	// retourneert TypedQuery<Docent>
 				.setParameter("tot", tot)																	// retourneert TypedQuery<Docent>
 				.getResultList();																			// retourneert List<Docent>
