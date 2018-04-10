@@ -22,6 +22,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import be.vdab.fietsacademy.entities.Docent;
 import be.vdab.fietsacademy.enums.Geslacht;
+import be.vdab.fietsacademy.valueobjects.IdEnEmailAdres;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
@@ -95,10 +96,10 @@ public class JpaDocentRepositoryTest {
 		 */
 		assertEquals("test@fietsacademy.be",
 				// Je geeft een parameter aan met een : teken gevolgd door de naam van de parameter.
-				(String) manager.createNativeQuery("select emailadres from docenten where id = :id")
+				(String) manager.createNativeQuery("select emailadres from docenten where id = :id")	// retourneert Query
 				// Je vult de parameter id in.
-				.setParameter("id", autoNumberId)
-				.getSingleResult());
+				.setParameter("id", autoNumberId)														// retourneert Query
+				.getSingleResult());																	// retourneert Object
 	}
 	@Test
 	public void delete() {
@@ -143,12 +144,52 @@ public class JpaDocentRepositoryTest {
 		long aantalDocenten = ((Number) manager.createNativeQuery("select count(*) from docenten where wedde between 1000 and 2000")
 				.getSingleResult()).longValue();
 		assertEquals(aantalDocenten, docenten.size());
-		// *** Elke wedde w voldoet aan: 1000 <= w <= 2000
+		// *** Elke gevonden wedde w voldoet aan: 1000 <= w <= 2000
 		BigDecimal duizend = BigDecimal.valueOf(1_000);
 		BigDecimal tweeduizend = BigDecimal.valueOf(2_000);
 		docenten.forEach(docent -> {
 			assertTrue(docent.getWedde().compareTo(duizend) >= 0);
 			assertTrue(docent.getWedde().compareTo(tweeduizend) <= 0);
 		});
+	}
+	@Test
+	public void findEmailAdressen() {
+		idVanNieuweMan();
+		List<String> adressen = repository.findEmailAdressen();
+		// *** Juiste aantal ***
+		long aantal = ((Number) manager.createNativeQuery("select count(emailadres) from docenten").getSingleResult()).longValue();
+		assertEquals(aantal, adressen.size());
+		// Elk gevonden resultaat is een emailadres
+		adressen.forEach(adres -> assertTrue(adres.contains("@")));
+	}
+	@Test
+	public void findIdsEnEmailAdressen() {
+		idVanNieuweMan();
+		List<IdEnEmailAdres> idsEnAdressen = repository.findIdsEnEmailAdressen();
+		// *** Juiste aantal ***
+		long aantal = ((Number) manager.createNativeQuery("select count(*) from docenten").getSingleResult()).longValue();
+		assertEquals(aantal, idsEnAdressen.size());
+	}
+	@Test
+	public void findGrootsteWedde() {
+		idVanNieuweMan();
+		BigDecimal grootsteWedde = repository.findGrootsteWedde();
+		/*
+		 * OPTIE 1 (mijn uitwerking)
+		 * Met een andere "JpaDocentRepository method".
+		 * Is ook goed.
+		 * Gebruikt wel een andere method uit de te testen class: findAll, maar deze is hier bij mij al getest en mag dus gebruikt worden.
+		 * Mogelijk nadeel (slechts een detail): als je deze manier gebruikt moet de method findAll al uitgewerkt zijn,
+		 * je kan dan niet eerst de tests schrijven en dan de volgorde van de te implementeren methods kiezen.
+		 */
+		List<Docent> docenten = repository.findAll();
+		docenten.forEach(docent -> assertTrue(docent.getWedde().compareTo(grootsteWedde) <= 0));
+		/*
+		 * OPTIE 2 (cursus)
+		 * Met een "createNativeQuery"
+		 */
+		BigDecimal grootsteWedde2 = BigDecimal.valueOf(
+				((Number) (manager.createNativeQuery("select max(wedde) from docenten").getSingleResult())).doubleValue());
+		assertEquals(0, grootsteWedde.compareTo(grootsteWedde2));
 	}
 }

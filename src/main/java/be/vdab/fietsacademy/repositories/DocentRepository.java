@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import be.vdab.fietsacademy.entities.Docent;
+import be.vdab.fietsacademy.valueobjects.IdEnEmailAdres;
 
 public interface DocentRepository {
 	// "Entity zoeken via de primary key"
@@ -17,4 +18,10 @@ public interface DocentRepository {
 	List<Docent> findAll();
 	// "JPQL: Selecteren"
 	List<Docent> findByWeddeBetween(BigDecimal van, BigDecimal tot);
+	// "Eén kolom lezen"
+	List<String> findEmailAdressen();
+	// "Meerdere kolommen lezen"
+	List<IdEnEmailAdres> findIdsEnEmailAdressen();
+	// "Aggregate functions"
+	BigDecimal findGrootsteWedde();
 }

@@ -9,6 +9,7 @@ import javax.persistence.EntityManager;
 import org.springframework.stereotype.Repository;
 
 import be.vdab.fietsacademy.entities.Docent;
+import be.vdab.fietsacademy.valueobjects.IdEnEmailAdres;
 
 @Repository
 class JpaDocentRepository implements DocentRepository {
@@ -53,5 +54,24 @@ class JpaDocentRepository implements DocentRepository {
 				.setParameter("van", van)																	// retourneert TypedQuery<Docent>
 				.setParameter("tot", tot)																	// retourneert TypedQuery<Docent>
 				.getResultList();																			// retourneert List<Docent>
+	}
+	@Override
+	public List<String> findEmailAdressen() {
+//		throw new UnsupportedOperationException();
+		return manager
+				.createQuery("select d.emailAdres from Docent d", String.class)	// ! hoofdletter in 'emailAdres': naam van private variabele, niet van kolom.
+				.getResultList();
+	}
+	@Override
+	public List<IdEnEmailAdres> findIdsEnEmailAdressen() {
+//		throw new UnsupportedOperationException();
+		return manager
+				.createQuery("select new be.vdab.fietsacademy.valueobjects.IdEnEmailAdres(d.id, d.emailAdres) from Docent d", IdEnEmailAdres.class)
+				.getResultList();
+	}
+	@Override
+	public BigDecimal findGrootsteWedde() {
+//		throw new UnsupportedOperationException();
+		return manager.createQuery("select max(d.wedde) from Docent d", BigDecimal.class).getSingleResult();
 	}
 }
