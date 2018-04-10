@@ -10,4 +10,10 @@
 			order by d.wedde, d.id
 		</query>
 	</named-query>
+	<named-query name="Docent.algemeneOpslag">
+		<query>
+			update Docent d
+			set d.wedde = d.wedde * :factor
+		</query>
+	</named-query>
 </entity-mappings>

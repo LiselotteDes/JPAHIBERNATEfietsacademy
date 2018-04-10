@@ -210,4 +210,17 @@ public class JpaDocentRepositoryTest {
 				.filter(aantalPerWedde -> aantalPerWedde.getWedde().compareTo(BigDecimal.valueOf(1000)) == 0)
 				.forEach(aantalPerWedde -> assertEquals(aantalDocentenMetWedde1000, aantalPerWedde.getAantal()));
 	}
+	@Test
+	public void algemeneOpslag() {
+		long id = idVanNieuweMan();
+		int aantalAangepast = repository.algemeneOpslag(BigDecimal.TEN);
+		// *** Er moeten meer dan 0 records zijn gewijzigd ***
+		assertNotEquals(0, aantalAangepast);
+		// *** Controleren dat de wedde van de gekende Docent nu 1100 is
+		BigDecimal wedde = BigDecimal.valueOf(((Number)
+				manager.createNativeQuery("select wedde from docenten where id = :id")
+				.setParameter("id", id)
+				.getSingleResult()).doubleValue());
+		assertEquals(0, BigDecimal.valueOf(1_100).compareTo(wedde));
+	}
 }

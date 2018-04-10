@@ -27,4 +27,6 @@ public interface DocentRepository {
 	BigDecimal findGrootsteWedde();
 	// "Group by"
 	List<AantalDocentenPerWedde> findAantalDocentenPerWedde();
+	// "Bulk updates"
+	int algemeneOpslag(BigDecimal percentage);
 }
