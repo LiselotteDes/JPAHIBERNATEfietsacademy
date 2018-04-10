@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import be.vdab.fietsacademy.entities.Docent;
+import be.vdab.fietsacademy.valueobjects.AantalDocentenPerWedde;
 import be.vdab.fietsacademy.valueobjects.IdEnEmailAdres;
 
 public interface DocentRepository {
@@ -24,4 +25,6 @@ public interface DocentRepository {
 	List<IdEnEmailAdres> findIdsEnEmailAdressen();
 	// "Aggregate functions"
 	BigDecimal findGrootsteWedde();
+	// "Group by"
+	List<AantalDocentenPerWedde> findAantalDocentenPerWedde();
 }

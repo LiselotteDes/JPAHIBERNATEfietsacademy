@@ -22,6 +22,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import be.vdab.fietsacademy.entities.Docent;
 import be.vdab.fietsacademy.enums.Geslacht;
+import be.vdab.fietsacademy.valueobjects.AantalDocentenPerWedde;
 import be.vdab.fietsacademy.valueobjects.IdEnEmailAdres;
 
 @RunWith(SpringRunner.class)
@@ -191,5 +192,22 @@ public class JpaDocentRepositoryTest {
 		BigDecimal grootsteWedde2 = BigDecimal.valueOf(
 				((Number) (manager.createNativeQuery("select max(wedde) from docenten").getSingleResult())).doubleValue());
 		assertEquals(0, grootsteWedde.compareTo(grootsteWedde2));
+		// (één van de twee mag in commentaar, maar het werkt met twee tests)
+	}
+	@Test
+	public void findAantalDocentenPerWedde() {
+		idVanNieuweMan();
+		List<AantalDocentenPerWedde> aantalDocentenPerWedde = repository.findAantalDocentenPerWedde();
+		// *** Juiste aantal weddes (rijen/resultaatobjecten) ***
+		long aantalUniekeWeddes = ((Number) manager.createNativeQuery(
+				"select count(distinct wedde) from docenten")
+				.getSingleResult()).longValue();
+		assertEquals(aantalUniekeWeddes, aantalDocentenPerWedde.size());
+		// *** Juiste aantal docenten per (vb) wedde '1000'
+		long aantalDocentenMetWedde1000 = ((Number) (manager.createNativeQuery(
+				"select count(*) from docenten where wedde = 1000").getSingleResult())).longValue();
+		aantalDocentenPerWedde.stream()
+				.filter(aantalPerWedde -> aantalPerWedde.getWedde().compareTo(BigDecimal.valueOf(1000)) == 0)
+				.forEach(aantalPerWedde -> assertEquals(aantalDocentenMetWedde1000, aantalPerWedde.getAantal()));
 	}
 }

@@ -9,6 +9,7 @@ import javax.persistence.EntityManager;
 import org.springframework.stereotype.Repository;
 
 import be.vdab.fietsacademy.entities.Docent;
+import be.vdab.fietsacademy.valueobjects.AantalDocentenPerWedde;
 import be.vdab.fietsacademy.valueobjects.IdEnEmailAdres;
 
 @Repository
@@ -73,5 +74,14 @@ class JpaDocentRepository implements DocentRepository {
 	public BigDecimal findGrootsteWedde() {
 //		throw new UnsupportedOperationException();
 		return manager.createQuery("select max(d.wedde) from Docent d", BigDecimal.class).getSingleResult();
+	}
+	@Override
+	public List<AantalDocentenPerWedde> findAantalDocentenPerWedde() {
+//		throw new UnsupportedOperationException();
+		return manager
+				.createQuery(
+						"select new be.vdab.fietsacademy.valueobjects.AantalDocentenPerWedde(d.wedde, count(d)) from Docent d group by d.wedde", 
+						AantalDocentenPerWedde.class)
+				.getResultList();
 	}
 }
