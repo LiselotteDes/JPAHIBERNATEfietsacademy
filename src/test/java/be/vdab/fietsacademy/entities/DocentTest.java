@@ -25,7 +25,7 @@ public class DocentTest {
 	@Test(expected = NullPointerException.class)
 	public void opslagMetNullKanNiet() {
 		docent1.opslag(null);
-		// wedde docent mag niet gewijzigd zijn:
+		// *** wedde docent mag niet gewijzigd zijn: *** 
 		assertEquals(0, ORIGINELE_WEDDE.compareTo(docent1.getWedde()));
 	}
 	@Test(expected = IllegalArgumentException.class)
@@ -33,5 +33,53 @@ public class DocentTest {
 		docent1.opslag(BigDecimal.valueOf(-1));
 		assertEquals(0, ORIGINELE_WEDDE.compareTo(docent1.getWedde()));
 	}
-
+	
+	//  "Verzameling value objects met een basistype" Tests
+	@Test
+	public void eenNieuweDocentHeeftGeenBijnamen() {
+		assertTrue(docent1.getBijnamen().isEmpty());
+	}
+	@Test
+	public void bijnaamToevoegen() {
+		// *** Toevoegen lukt *** 
+		assertTrue(docent1.addBijnaam("test"));
+		// *** Na verzameling bevat, na het toevoegen van een bijnaam bij nieuwe docent, 1 bijnaam *** 
+		assertEquals(1, docent1.getBijnamen().size());
+		// *** De set bijnamen bevat de toegevoegde bijnaam *** 
+		assertTrue(docent1.getBijnamen().contains("test"));
+	}
+	@Test
+	public void tweeKeerDezelfdeBijnaamToevoegenKanNiet() {
+		docent1.addBijnaam("Test");
+		assertFalse(docent1.addBijnaam("Test"));
+		assertEquals(1, docent1.getBijnamen().size());
+	}
+	@Test(expected = NullPointerException.class)
+	public void nullAlsBijnaamToevoegenKanNiet() {
+		docent1.addBijnaam(null);
+	}
+	@Test(expected = IllegalArgumentException.class)
+	public void eenLegeBijnaamToevoegenKanNiet() {
+		docent1.addBijnaam("");
+	}
+	@Test(expected = IllegalArgumentException.class)
+	public void eenBijnaamMetEnkelSpatiesToevoegenKanNiet() {
+		docent1.addBijnaam("   ");
+	}
+	@Test
+	public void bijnaamVerwijderen() {
+		docent1.addBijnaam("test");
+		// *** bijnaam verwijderen die in de set zit lukt en vermindert de omvang van de set ***
+		assertTrue(docent1.removeBijnaam("test"));
+		assertTrue(docent1.getBijnamen().isEmpty());
+	}
+	@Test
+	public void eenBijnaamVerwijderenDieJeNietToevoegdeKanNiet() {
+		docent1.addBijnaam("test");
+		// *** bijnaam verwijderen die niet in de set zit geeft false en wijzigt niets aan de lengte van de set ***
+		assertFalse(docent1.removeBijnaam("test2"));
+		assertEquals(1, docent1.getBijnamen().size());
+		// *** de set bevat nog steeds de toegevoegde bijnaam die niet verwijderd werd
+		assertTrue(docent1.getBijnamen().contains("test"));
+	}
 }

@@ -160,7 +160,7 @@ public class JpaDocentRepositoryTest {
 		// *** Juiste aantal ***
 		long aantal = ((Number) manager.createNativeQuery("select count(emailadres) from docenten").getSingleResult()).longValue();
 		assertEquals(aantal, adressen.size());
-		// Elk gevonden resultaat is een emailadres
+		// *** Elk gevonden resultaat is een emailadres
 		adressen.forEach(adres -> assertTrue(adres.contains("@")));
 	}
 	@Test
