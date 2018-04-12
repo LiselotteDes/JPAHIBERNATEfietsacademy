@@ -6,24 +6,26 @@ import javax.persistence.EntityManager;
 
 import org.springframework.stereotype.Repository;
 
-import be.vdab.fietsacademy.entities.Cursus;
+import be.vdab.fietsacademy.entities.Campus;
 
 @Repository
-class JpaCursusRepository implements CursusRepository {
+class JpaCampusRepository implements CampusRepository {
 	private final EntityManager manager;
-	JpaCursusRepository(EntityManager manager) {
+	JpaCampusRepository(EntityManager manager) {
 		this.manager = manager;
 	}
 
 	@Override
-	public Optional<Cursus> read(String id) {
+	public void create(Campus campus) {
 //		throw new UnsupportedOperationException();
-		return Optional.ofNullable(manager.find(Cursus.class, id));
+		manager.persist(campus);
+
 	}
 
 	@Override
-	public void create(Cursus cursus) {
+	public Optional<Campus> read(long id) {
 //		throw new UnsupportedOperationException();
-		manager.persist(cursus);
+		return Optional.ofNullable(manager.find(Campus.class, id));
 	}
+
 }

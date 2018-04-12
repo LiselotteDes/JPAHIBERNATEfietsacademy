@@ -11,10 +11,10 @@
 	</entity>
 
 	<entity>
-		<entity-name>be.vdab.fietsacademy.entities.Cursus</entity-name>
+		<entity-name>be.vdab.fietsacademy.entities.GroepsCursus</entity-name>
 		<entity-width>120</entity-width>
-		<entity-height>108</entity-height>
-		<entity-X-Coordinate>50</entity-X-Coordinate>
+		<entity-height>90</entity-height>
+		<entity-X-Coordinate>490</entity-X-Coordinate>
 		<entity-Y-Coordinate>338</entity-Y-Coordinate>
 		<primary-collapsed>false</primary-collapsed>
 		<relation-collapsed>false</relation-collapsed>
@@ -22,10 +22,10 @@
 	</entity>
 
 	<entity>
-		<entity-name>be.vdab.fietsacademy.entities.GroepsCursus</entity-name>
+		<entity-name>be.vdab.fietsacademy.entities.Cursus</entity-name>
 		<entity-width>120</entity-width>
-		<entity-height>90</entity-height>
-		<entity-X-Coordinate>490</entity-X-Coordinate>
+		<entity-height>108</entity-height>
+		<entity-X-Coordinate>50</entity-X-Coordinate>
 		<entity-Y-Coordinate>338</entity-Y-Coordinate>
 		<primary-collapsed>false</primary-collapsed>
 		<relation-collapsed>false</relation-collapsed>
@@ -38,6 +38,28 @@
 		<entity-height>70</entity-height>
 		<entity-X-Coordinate>270</entity-X-Coordinate>
 		<entity-Y-Coordinate>438</entity-Y-Coordinate>
+		<primary-collapsed>false</primary-collapsed>
+		<relation-collapsed>false</relation-collapsed>
+		<basic-collapsed>false</basic-collapsed>
+	</entity>
+
+	<entity>
+		<entity-name>be.vdab.fietsacademy.valueobjects.Adres</entity-name>
+		<entity-width>120</entity-width>
+		<entity-height>130</entity-height>
+		<entity-X-Coordinate>50</entity-X-Coordinate>
+		<entity-Y-Coordinate>608</entity-Y-Coordinate>
+		<primary-collapsed>false</primary-collapsed>
+		<relation-collapsed>false</relation-collapsed>
+		<basic-collapsed>false</basic-collapsed>
+	</entity>
+
+	<entity>
+		<entity-name>be.vdab.fietsacademy.entities.Campus</entity-name>
+		<entity-width>120</entity-width>
+		<entity-height>128</entity-height>
+		<entity-X-Coordinate>490</entity-X-Coordinate>
+		<entity-Y-Coordinate>608</entity-Y-Coordinate>
 		<primary-collapsed>false</primary-collapsed>
 		<relation-collapsed>false</relation-collapsed>
 		<basic-collapsed>false</basic-collapsed>
