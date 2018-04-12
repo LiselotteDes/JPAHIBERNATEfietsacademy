@@ -43,6 +43,7 @@ public class JpaDocentRepositoryTest {
 		docent = new Docent("test", "test", BigDecimal.TEN, "test@fietsacademy.be", Geslacht.MAN);
 	}
 	
+	// private methods
 	private long idVanNieuweMan() {
 		// Je specifieert een uit te voeren SQL statement met de method createNativeQuery.
 		manager.createNativeQuery("insert into docenten("
@@ -222,5 +223,27 @@ public class JpaDocentRepositoryTest {
 				.setParameter("id", id)
 				.getSingleResult()).doubleValue());
 		assertEquals(0, BigDecimal.valueOf(1_100).compareTo(wedde));
+	}
+	
+	// "Verzameling value objects met een basistype"
+	@Test
+	public void bijnamenLezen() {
+		long id = idVanNieuweMan();
+		manager.createNativeQuery("insert into docentenbijnamen(docentid,bijnaam) values(:id,'test')")
+				.setParameter("id", id)
+				.executeUpdate();
+		Docent docent = repository.read(id).get();
+		// *** aantal bijnamen van gelezen object is 1 ***
+		assertEquals(1, docent.getBijnamen().size());
+		// *** verzameling bijnamen bevat 'test' ***
+		assertTrue(docent.getBijnamen().contains("test"));
+	}
+	@Test
+	public void bijnaamToevoegen() {
+		repository.create(docent);
+		docent.addBijnaam("test");
+		assertEquals("test", (String) manager.createNativeQuery("select naam from docentenbijnamen where docentid = :id")
+											.setParameter("id", docent.getId())
+											.getSingleResult());
 	}
 }
