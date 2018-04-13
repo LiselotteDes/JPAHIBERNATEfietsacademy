@@ -1,8 +1,7 @@
 package be.vdab.fietsacademy.repositories;
 
 import static org.junit.Assert.assertEquals;
-
-import java.util.Optional;
+import static org.junit.Assert.assertTrue;
 
 import javax.persistence.EntityManager;
 
@@ -18,6 +17,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import be.vdab.fietsacademy.entities.Campus;
 import be.vdab.fietsacademy.valueobjects.Adres;
+import be.vdab.fietsacademy.valueobjects.TelefoonNr;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
@@ -61,5 +61,16 @@ public class JpaCampusRepositoryTest {
 		// Test of het attribuut van het bijbehorende value object juist weggeschreven werd
 		String gemeente = (String) (manager.createNativeQuery("select gemeente from campussen where id = :id").setParameter("id", id).getSingleResult());
 		assertEquals("test", gemeente);
+	}
+	
+	// "Verzameling value objects met een eigen type lezen uit de database"
+	@Test
+	public void telefoonNrsLezen() {
+		long id = idVanNieuweCampus();
+		manager.createNativeQuery("insert into campussentelefoonnrs(campusid,nummer,fax,opmerking) values(:id,'1',false,'')")
+				.setParameter("id", id).executeUpdate();
+		Campus campus = repository.read(id).get();
+		assertEquals(1, campus.getTelefoonNrs().size());
+		assertTrue(campus.getTelefoonNrs().contains(new TelefoonNr("1", false, "")));
 	}
 }

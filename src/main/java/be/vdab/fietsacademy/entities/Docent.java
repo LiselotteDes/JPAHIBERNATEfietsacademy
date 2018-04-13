@@ -63,7 +63,8 @@ public class Docent implements Serializable {
 	 * @JoinColumn 			duidt een kolom in deze table aan.
 	 * 						Het is de foreign key kolom die verwijst naar de primary kolom in de table (docenten) die hoort bij de huidige entity class.
 	 * 						Je vult met @JoinColumn de parameter joinColumns van @CollectionTable.
-	 * @Column 				duidt de kolom naam aan die hoort bij de value objects in de verzameling.
+	 * @Column 				duidt de kolom naam aan die hoort bij de value objects in de verzameling. 
+	 * 						(! voor value objects met een basistype)
 	 */
 	@ElementCollection
 	@CollectionTable(name = "docentenbijnamen", joinColumns = @JoinColumn(name = "docentid"))
