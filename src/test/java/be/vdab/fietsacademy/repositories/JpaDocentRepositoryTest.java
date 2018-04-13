@@ -20,9 +20,11 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import be.vdab.fietsacademy.entities.Campus;
 import be.vdab.fietsacademy.entities.Docent;
 import be.vdab.fietsacademy.enums.Geslacht;
 import be.vdab.fietsacademy.valueobjects.AantalDocentenPerWedde;
+import be.vdab.fietsacademy.valueobjects.Adres;
 import be.vdab.fietsacademy.valueobjects.IdEnEmailAdres;
 
 @RunWith(SpringRunner.class)
@@ -31,6 +33,9 @@ import be.vdab.fietsacademy.valueobjects.IdEnEmailAdres;
 // @DataJpaTest maakt enkel een DataSource bean en een EntityManager bean. Je maakt hier een bean van de te testen class: JpaDocentRepository.
 @Import(JpaDocentRepository.class)
 public class JpaDocentRepositoryTest {
+	
+	// *** PRIVATE VARIABELEN ***
+	
 	@Autowired
 	private JpaDocentRepository repository;
 	@Autowired
@@ -38,21 +43,26 @@ public class JpaDocentRepositoryTest {
 	private EntityManager manager;
 	// Variabele toegevoegd om create method te kunnen testen
 	private Docent docent;
+	private Campus campus;
+	
 	@Before
 	public void before() {
-		docent = new Docent("test", "test", BigDecimal.TEN, "test@fietsacademy.be", Geslacht.MAN);
+		campus = new Campus("test", new Adres("test", "test", "test", "test"));
+		docent = new Docent("test", "test", BigDecimal.TEN, "test@fietsacademy.be", Geslacht.MAN, campus);
 	}
 	
-	// private methods
+	// *** PRIVATE METHODS ***
+	
 	private long idVanNieuweMan() {
 		// Je specifieert een uit te voeren SQL statement met de method createNativeQuery.
 		manager.createNativeQuery("insert into docenten("
-				+ "voornaam, familienaam, wedde, emailadres, geslacht)"
-				+ "values('jean', 'smits', 1000, 'jean.smits@fietsacademy.be', 'MAN')")
-		// Je voert dit statement uit met method executeUpdate, als dit een insert/update/delete statment is (retourneert # aangepaste entities)
-		.executeUpdate();
+				+ "voornaam, familienaam, wedde, emailadres, geslacht, campusid)"
+				+ "values('testM', 'testM', 1000, 'testM@fietsacademy.be', 'MAN', :campusid)")
+			.setParameter("campusid", idVanNieuweCampus())
+			// Je voert dit statement uit met method executeUpdate, als dit een insert/update/delete statment is (retourneert # aangepaste entities)
+			.executeUpdate();
 		return ((Number) manager
-				.createNativeQuery("select id from docenten where emailadres='jean.smits@fietsacademy.be'")
+				.createNativeQuery("select id from docenten where emailadres='testM@fietsacademy.be'")
 				/*
 				 * Je voert het SQL statement uit met de method getSingleResult als het een select statement is dat één waarde teruggeeft.
 				 * De method getSingleResult geeft je die ene waarde onder de gedaante van Object.
@@ -63,17 +73,24 @@ public class JpaDocentRepositoryTest {
 				.longValue();
 	}
 	private long idVanNieuweVrouw() {
-		manager.createNativeQuery("insert into docenten(voornaam, familienaam, wedde, emailadres, geslacht)"
-				+ "values('jeanine', 'smits', 1000, 'jeanine.smits@fietsacademy.be','VROUW')").executeUpdate();
-		return ((Number) manager.createNativeQuery("select id from docenten where emailadres='jeanine.smits@fietsacademy.be'")
+		manager.createNativeQuery("insert into docenten(voornaam, familienaam, wedde, emailadres, geslacht, campusid)"
+				+ "values('testV', 'testV', 1000, 'testV@fietsacademy.be','VROUW', :campusid)")
+			.setParameter("campusid", idVanNieuweCampus()).executeUpdate();
+		return ((Number) manager.createNativeQuery("select id from docenten where emailadres='testV@fietsacademy.be'")
 				.getSingleResult()).longValue();
 	}
+	private long idVanNieuweCampus() {
+		manager.createNativeQuery("insert into campussen(naam,straat,huisNr,postCode,gemeente) values('test','test','test','test','test')").executeUpdate();
+		return ((Number) manager.createNativeQuery("select id from campussen where naam='test'").getSingleResult()).longValue();
+	}
+	
+	// *** TESTEN ***
 	
 	@Test
 	public void read() {
 		Optional<Docent> optionalDocent = repository.read(idVanNieuweMan());
 		assertTrue(optionalDocent.isPresent());
-		assertEquals("jean.smits@fietsacademy.be", optionalDocent.get().getEmailAdres());
+		assertEquals("testM@fietsacademy.be", optionalDocent.get().getEmailAdres());
 	}
 	@Test
 	public void man() {
@@ -85,16 +102,17 @@ public class JpaDocentRepositoryTest {
 	}
 	@Test
 	public void create() {
+		manager.persist(campus);
 		repository.create(docent);
 		long autoNumberId = docent.getId();
 		/*
-		 * De private variabele id, die JPA heeft ingevuld, na het toevoegen van het nieuwe record, met het getal in de kolom,
-		 * mag niet 0 zijn.
+		 * *** De private variabele id, die JPA heeft ingevuld, na het toevoegen van het nieuwe record, met het getal in de kolom,
+		 * mag niet 0 zijn. ***
 		 */
 		assertNotEquals(0, autoNumberId);
 		/*
-		 * Als je het record terug zoekt met een SQL statement, mbv het id, dan moet het emailadres dat gevonden wordt in de db 
-		 * gelijk zijn aan het emailadres van het Docent object dat werd meegegeven.
+		 * *** Als je het record terug zoekt met een SQL statement, mbv het id, dan moet het emailadres dat gevonden wordt in de db 
+		 * gelijk zijn aan het emailadres van het Docent object dat werd meegegeven. ***
 		 */
 		assertEquals("test@fietsacademy.be",
 				// Je geeft een parameter aan met een : teken gevolgd door de naam van de parameter.
@@ -102,6 +120,12 @@ public class JpaDocentRepositoryTest {
 				// Je vult de parameter id in.
 				.setParameter("id", autoNumberId)														// retourneert Query
 				.getSingleResult());																	// retourneert Object
+		/*
+		 * "Many-to-one associatie"
+		 * *** Je controleert of JPA het correcte campus id heeft ingevuld in het toegevoegde docenten record ***
+		 */
+		assertEquals(campus.getId(), ((Number) manager.createNativeQuery("select campusid from docenten where id = :id").setParameter("id", autoNumberId)
+													.getSingleResult()).longValue());
 	}
 	@Test
 	public void delete() {
@@ -240,10 +264,22 @@ public class JpaDocentRepositoryTest {
 	}
 	@Test
 	public void bijnaamToevoegen() {
+		manager.persist(campus);	// "many-to-one associatie"
 		repository.create(docent);
 		docent.addBijnaam("test");
-		assertEquals("test", (String) manager.createNativeQuery("select naam from docentenbijnamen where docentid = :id")
+		assertEquals("test", (String) manager.createNativeQuery("select bijnaam from docentenbijnamen where docentid = :id")
 											.setParameter("id", docent.getId())
 											.getSingleResult());
+	}
+	// "many-to-one associatie": *** test die aantoont dat lazy loading werkt ***
+	@Test
+	public void campusLazyLoaded() {
+		// JPA leest enkel een record uit de table docenten
+		Docent docent = repository.read(idVanNieuweMan()).get();
+		/*
+		 * Je spreekt nu de campus aan die bij de docent hoort. 
+		 * JPA leest nu het bijbehorende record uit de table campussen.
+		 */
+		assertEquals("test", docent.getCampus().getNaam());	
 	}
 }

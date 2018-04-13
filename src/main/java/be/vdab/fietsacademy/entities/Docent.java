@@ -14,10 +14,12 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import be.vdab.fietsacademy.enums.Geslacht;
@@ -41,6 +43,9 @@ import be.vdab.fietsacademy.enums.Geslacht;
  * of over het netwerk zou transporteren met serialization.
  */
 public class Docent implements Serializable {
+	
+	// *** PRIVATE VARIABELEN ***
+	
 	private static final long serialVersionUID = 1L;
 	// Je tikt @Id voor de private variabele die hoort bij de primary key kolom.
 	@Id
@@ -70,21 +75,40 @@ public class Docent implements Serializable {
 	@CollectionTable(name = "docentenbijnamen", joinColumns = @JoinColumn(name = "docentid"))
 	@Column(name = "bijnaam")
 	private Set<String> bijnamen;
+	/*
+	 * "Many-to-one associatie"
+	 * 
+	 * @ManyToOne 	staat bij een variabele die een many-to-one associatie voorstelt.
+	 * 				- De foreign key kolom campusId, die bij deze associatie hoort, is in de database gedefinieerd als verplicht in te vullen.
+	 * 				  Je plaatst dan de parameter optional op false.
+	 * 				  JPA controleert dan voor het toevoegen/wijzigen van een record dat deze kolom wel degelijk ingevuld is 
+	 * 				  en werpt een exception als dit niet het geval is.
+	 * 				- Je stelt lazy loading in (ipv de standaard eager loading) met de parameter fetch.
+	 * @JoinColumn	De table docenten hoort bij de huidige class Docent.
+	 * 				@JoinColumn duidt de kolom campusid in deze table aan.
+	 * 				Je kiest de foreign key kolom die verwijst naar de table campussen die hoort bij de geassocieerde entity (Campus).
+	 */
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "campusid")
+	private Campus campus;
 	
-	// constructors
+	// *** CONSTRUCTORS **
+	
 	protected Docent() {
 	}
 	
-	public Docent(String voornaam, String familienaam, BigDecimal wedde, String emailAdres, Geslacht geslacht) {
+	public Docent(String voornaam, String familienaam, BigDecimal wedde, String emailAdres, Geslacht geslacht, Campus campus) {
 		this.voornaam = voornaam;
 		this.familienaam = familienaam;
 		this.wedde = wedde;
 		this.emailAdres = emailAdres;
 		this.geslacht = geslacht;
-		this.bijnamen = new LinkedHashSet<>();		//  "Verzameling value objects met een basistype"
+		this.bijnamen = new LinkedHashSet<>();		// "Verzameling value objects met een basistype"
+		setCampus(campus);							// "Many-to-one associatie"
 	}
 
-	// getters
+	// *** GETTERS ***
+	
 	public long getId() {
 		return id;
 	}
@@ -103,18 +127,9 @@ public class Docent implements Serializable {
 	public Geslacht getGeslacht() {
 		return geslacht;
 	}
-	
-	// Je maakt een nieuwe method waarmee de gebruiker één docent opslag geeft, als voorbeeld van hoe je een entity wijzigt.
-	public void opslag(BigDecimal percentage) {
-		if (percentage.compareTo(BigDecimal.ZERO) <= 0) {
-			throw new IllegalArgumentException();
-		}
-		BigDecimal factor = BigDecimal.ONE.add(percentage.divide(BigDecimal.valueOf(100)));
-		wedde = wedde.multiply(factor, new MathContext(2, RoundingMode.HALF_UP));
-	}
-	
-	//  "Verzameling value objects met een basistype": methods die met deze Set samenwerken
 	/*
+	 * "Verzameling value objects met een basistype": methods die met deze Set samenwerken
+	 * 
 	 * JPA stelt zelf geen eisen aan een getter voor de verzameling value objects.
 	 * Los van JPA wordt volgende manier aangeraden:
 	 */
@@ -139,6 +154,12 @@ public class Docent implements Serializable {
 		 * De getter geeft zo een read-only voorstelling van de Set.
 		 */
 	}
+	public Campus getCampus() {
+		return campus;
+	}
+	
+	// *** SETTERS ***
+	
 	public boolean addBijnaam(String bijnaam) {
 //		throw new UnsupportedOperationException();
 		if (bijnaam.trim().isEmpty()) {
@@ -152,5 +173,23 @@ public class Docent implements Serializable {
 //			throw new IllegalArgumentException();
 //		}
 		return bijnamen.remove(bijnaam);
+	}
+	
+	public void setCampus(Campus campus) {
+		if (campus == null) {
+			throw new NullPointerException();
+		}
+		this.campus = campus;
+	}
+	
+	// *** ANDERE METHODS ***
+	
+	// Je maakt een nieuwe method waarmee de gebruiker één docent opslag geeft, als voorbeeld van hoe je een entity wijzigt.
+	public void opslag(BigDecimal percentage) {
+		if (percentage.compareTo(BigDecimal.ZERO) <= 0) {
+			throw new IllegalArgumentException();
+		}
+		BigDecimal factor = BigDecimal.ONE.add(percentage.divide(BigDecimal.valueOf(100)));
+		wedde = wedde.multiply(factor, new MathContext(2, RoundingMode.HALF_UP));
 	}
 }

@@ -16,9 +16,11 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import be.vdab.fietsacademy.entities.Campus;
 import be.vdab.fietsacademy.entities.Docent;
 import be.vdab.fietsacademy.enums.Geslacht;
 import be.vdab.fietsacademy.repositories.DocentRepository;
+import be.vdab.fietsacademy.valueobjects.Adres;
 
 /*
  * Je maakt een integration test om daarin te testen wat je in de unit test niet kan testen:
@@ -51,7 +53,9 @@ public class DefaultDocentServiceIntegrationTest {
 	private EntityManager manager;
 	@Test
 	public void opslag() {
-		Docent docent = new Docent("test", "test", BigDecimal.valueOf(200), "test@fietsacademy.be", Geslacht.MAN);
+		Campus campus = new Campus("test", new Adres("test", "test", "test", "test"));
+		manager.persist(campus);
+		Docent docent = new Docent("test", "test", BigDecimal.valueOf(200), "test@fietsacademy.be", Geslacht.MAN, campus);
 		repository.create(docent);
 		long id = docent.getId();	// create gebruikt persist method van de EntityManager, waardoor JPA zelf het id variabele van het object invult.
 		/*
