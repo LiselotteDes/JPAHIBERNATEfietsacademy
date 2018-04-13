@@ -48,7 +48,8 @@ public class JpaDocentRepositoryTest {
 	@Before
 	public void before() {
 		campus = new Campus("test", new Adres("test", "test", "test", "test"));
-		docent = new Docent("test", "test", BigDecimal.TEN, "test@fietsacademy.be", Geslacht.MAN, campus);
+		docent = new Docent("test", "test", BigDecimal.TEN, "test@fietsacademy.be", Geslacht.MAN/*, campus*/);
+		campus.addDocent(docent);
 	}
 	
 	// *** PRIVATE METHODS ***
@@ -126,6 +127,14 @@ public class JpaDocentRepositoryTest {
 		 */
 		assertEquals(campus.getId(), ((Number) manager.createNativeQuery("select campusid from docenten where id = :id").setParameter("id", autoNumberId)
 													.getSingleResult()).longValue());
+		
+		/*
+		 * "One-to-many associatie"
+		 * 
+		 * Test om te tonen dat equals en hashcode gebaseerd op id niet lukken: 
+		 * het Set<Docent> in het Campus object, die deze methods oproept, vindt het Docent object niet meer in zijn verzameling.
+		 */
+		assertTrue(campus.getDocenten().contains(docent));
 	}
 	@Test
 	public void delete() {
@@ -272,14 +281,14 @@ public class JpaDocentRepositoryTest {
 											.getSingleResult());
 	}
 	// "many-to-one associatie": *** test die aantoont dat lazy loading werkt ***
-	@Test
-	public void campusLazyLoaded() {
-		// JPA leest enkel een record uit de table docenten
-		Docent docent = repository.read(idVanNieuweMan()).get();
-		/*
-		 * Je spreekt nu de campus aan die bij de docent hoort. 
-		 * JPA leest nu het bijbehorende record uit de table campussen.
-		 */
-		assertEquals("test", docent.getCampus().getNaam());	
-	}
+//	@Test
+//	public void campusLazyLoaded() {
+//		// JPA leest enkel een record uit de table docenten
+//		Docent docent = repository.read(idVanNieuweMan()).get();
+//		/*
+//		 * Je spreekt nu de campus aan die bij de docent hoort. 
+//		 * JPA leest nu het bijbehorende record uit de table campussen.
+//		 */
+//		assertEquals("test", docent.getCampus().getNaam());	
+//	}
 }

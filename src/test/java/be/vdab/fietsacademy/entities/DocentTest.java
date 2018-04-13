@@ -14,13 +14,19 @@ import be.vdab.fietsacademy.valueobjects.Adres;
 
 public class DocentTest {
 	private static final BigDecimal ORIGINELE_WEDDE = BigDecimal.valueOf(200);
-	private Docent docent1;
+	private Docent docent1, docent2;
 	private Campus campus1;
 	
 	@Before
 	public void before() {
 		campus1 = new Campus("test", new Adres("test", "test", "test", "test"));
-		docent1 = new Docent("test", "test", ORIGINELE_WEDDE, "test@fietsacademy.be", Geslacht.MAN, campus1);
+		docent1 = new Docent("test", "test", ORIGINELE_WEDDE, "test@fietsacademy.be", Geslacht.MAN/*, campus1*/);
+		/*
+		 * "one-to-many associatie" aantonen dat equals en hashcode gebaseerd op id niet werken: 
+		 * Gezien als deze Docent objecten als id 0 hebben,
+		 * laat de Set<Docent> in het Campus object niet meerdere keren nieuwe Docent objecten toe.
+		 */
+		docent2 = new Docent("test2", "test2", ORIGINELE_WEDDE, "test2@fietsacademy.be", Geslacht.MAN);	
 	}
 	@Test
 	public void opslag() {

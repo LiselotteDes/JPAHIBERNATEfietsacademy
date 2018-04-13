@@ -88,23 +88,23 @@ public class Docent implements Serializable {
 	 * 				@JoinColumn duidt de kolom campusid in deze table aan.
 	 * 				Je kiest de foreign key kolom die verwijst naar de table campussen die hoort bij de geassocieerde entity (Campus).
 	 */
-	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-	@JoinColumn(name = "campusid")
-	private Campus campus;
+//	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+//	@JoinColumn(name = "campusid")
+//	private Campus campus;
 	
 	// *** CONSTRUCTORS **
 	
 	protected Docent() {
 	}
 	
-	public Docent(String voornaam, String familienaam, BigDecimal wedde, String emailAdres, Geslacht geslacht, Campus campus) {
+	public Docent(String voornaam, String familienaam, BigDecimal wedde, String emailAdres, Geslacht geslacht/*, Campus campus*/) {
 		this.voornaam = voornaam;
 		this.familienaam = familienaam;
 		this.wedde = wedde;
 		this.emailAdres = emailAdres;
 		this.geslacht = geslacht;
 		this.bijnamen = new LinkedHashSet<>();		// "Verzameling value objects met een basistype"
-		setCampus(campus);							// "Many-to-one associatie"
+//		setCampus(campus);							// "Many-to-one associatie"
 	}
 
 	// *** GETTERS ***
@@ -154,9 +154,9 @@ public class Docent implements Serializable {
 		 * De getter geeft zo een read-only voorstelling van de Set.
 		 */
 	}
-	public Campus getCampus() {
-		return campus;
-	}
+//	public Campus getCampus() {
+//		return campus;
+//	}
 	
 	// *** SETTERS ***
 	
@@ -175,11 +175,26 @@ public class Docent implements Serializable {
 		return bijnamen.remove(bijnaam);
 	}
 	
-	public void setCampus(Campus campus) {
-		if (campus == null) {
-			throw new NullPointerException();
+//	public void setCampus(Campus campus) {
+//		if (campus == null) {
+//			throw new NullPointerException();
+//		}
+//		this.campus = campus;
+//	}
+	
+	// EQUALS & HASHCODE
+	
+	@Override
+	public boolean equals(Object object) {
+		if (! (object instanceof Docent)) {
+			return false;
 		}
-		this.campus = campus;
+		Docent docent = (Docent) object;
+		return this.id == docent.id;
+	}
+	@Override
+	public int hashCode() {
+		return (int) id;
 	}
 	
 	// *** ANDERE METHODS ***

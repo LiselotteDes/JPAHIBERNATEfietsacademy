@@ -13,6 +13,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
 
@@ -48,12 +49,27 @@ public class Campus implements Serializable {
 	@CollectionTable(name = "campussentelefoonnrs", joinColumns = @JoinColumn(name = "campusid"))
 	@OrderBy("fax")
 	private Set<TelefoonNr> telefoonNrs;
+	/*
+	 * "One-to-many associatie"
+	 * 
+	 * @OneToMany 	staat bij een variabele die een one-to-many associatie voorstelt.
+	 * @JoinColumn	Bij de variabele docenten hoort de table docenten.
+	 * 				@JoinColumn duidt in die table de foreign key kolom aan die verwijst naar de primary key van de table (campussen), 
+	 * 				die hoort bij de huidige class (Campus).
+	 * @OrderBy		definieert de volgorde waarmee JPA de Docent entities aan de many kant leest uit de database.
+	 * 				Je vermeldt de naam van één of meerdere private variabelen die horen bij de kolom(men) waarop je wil sorteren.
+	 */
+	@OneToMany
+	@JoinColumn(name = "campusid")
+	@OrderBy("voornaam, familienaam")
+	private Set<Docent> docenten;
 	
 	// een geparametriseerde constructor (zonder id parameter)
 	public Campus(String naam, Adres adres) {
 		this.naam = naam;
 		this.adres = adres;
 		this.telefoonNrs = new LinkedHashSet<>();
+		this.docenten = new LinkedHashSet<>();
 	}
 	
 	// een protected default constructor
@@ -74,6 +90,17 @@ public class Campus implements Serializable {
 	public Set<TelefoonNr> getTelefoonNrs() {
 		return Collections.unmodifiableSet(telefoonNrs);
 	}
+	// getter voor de one-to-many associatie naar Docent
+	public Set<Docent> getDocenten() {
+		return Collections.unmodifiableSet(docenten);
+	}
 	
-	// mogelijke extra methods: add(TelefoonNr telefoonNr) en remove(TelefoonNr nr)
+	// (mogelijke extra methods: add(TelefoonNr telefoonNr) en remove(TelefoonNr nr) )
+	
+	public boolean addDocent(Docent docent) {
+		if (docent == null) {
+			throw new NullPointerException();
+		}
+		return docenten.add(docent);
+	}
 }
