@@ -131,8 +131,8 @@ public class JpaDocentRepositoryTest {
 		/*
 		 * "One-to-many associatie"
 		 * 
-		 * Test om te tonen dat equals en hashcode gebaseerd op id niet lukken: 
-		 * het Set<Docent> in het Campus object, die deze methods oproept, vindt het Docent object niet meer in zijn verzameling.
+		 * *** Test om te tonen dat equals en hashcode gebaseerd op id niet lukken: ***
+		 * de Set<Docent> in het Campus object, die deze methods oproept, vindt het Docent object niet meer in zijn verzameling.
 		 */
 		assertTrue(campus.getDocenten().contains(docent));
 	}

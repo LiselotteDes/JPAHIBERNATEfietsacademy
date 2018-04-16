@@ -103,4 +103,31 @@ public class Campus implements Serializable {
 		}
 		return docenten.add(docent);
 	}
+	
+	// equals & hashcode gebaseerd op naam
+	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((naam == null) ? 0 : naam.toUpperCase().hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (!(obj instanceof Campus))
+			return false;
+		Campus other = (Campus) obj;
+		if (naam == null) {
+			if (other.naam != null)
+				return false;
+		} else if (!naam.equalsIgnoreCase(other.naam))
+			return false;
+		return true;
+	}
 }

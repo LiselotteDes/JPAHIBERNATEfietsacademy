@@ -182,21 +182,6 @@ public class Docent implements Serializable {
 //		this.campus = campus;
 //	}
 	
-	// EQUALS & HASHCODE
-	
-	@Override
-	public boolean equals(Object object) {
-		if (! (object instanceof Docent)) {
-			return false;
-		}
-		Docent docent = (Docent) object;
-		return this.id == docent.id;
-	}
-	@Override
-	public int hashCode() {
-		return (int) id;
-	}
-	
 	// *** ANDERE METHODS ***
 	
 	// Je maakt een nieuwe method waarmee de gebruiker één docent opslag geeft, als voorbeeld van hoe je een entity wijzigt.
@@ -206,5 +191,31 @@ public class Docent implements Serializable {
 		}
 		BigDecimal factor = BigDecimal.ONE.add(percentage.divide(BigDecimal.valueOf(100)));
 		wedde = wedde.multiply(factor, new MathContext(2, RoundingMode.HALF_UP));
+	}
+	
+	// EQUALS & HASHCODE
+
+	@Override
+	public boolean equals(Object object) {
+		if (! (object instanceof Docent)) {
+			return false;
+		}
+		// 1° poging: verkeerdelijk gebaseerd op id = private variabele die hoort bij de automatisch gegenereerde primary key.
+//		Docent docent = (Docent) object; 
+//		return this.id == docent.id;
+		// Juist: gabaseerd op emailadres. 
+		if (emailAdres == null) {
+			return false;
+		}
+		// Je maakt bij het vergelijken van email adressen geen onderscheid tussen kleine en hoofdletters.
+		return emailAdres.equalsIgnoreCase(((Docent) object).emailAdres);
+	}
+	@Override
+	public int hashCode() {
+		// 1° poging: verkeerdelijk gebaseerd op id = private variabele die hoort bij de automatisch gegenereerde primary key.
+//		return (int) id;
+		// Juist: gebaseerd op emailadres.
+		// Je maakt bij het bepalen van de hashCode geen onderscheid tussen kleine en hoofdletters.
+		return emailAdres == null ? 0 : emailAdres.toLowerCase().hashCode();
 	}
 }

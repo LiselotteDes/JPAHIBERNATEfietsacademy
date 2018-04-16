@@ -73,4 +73,19 @@ public class JpaCampusRepositoryTest {
 		assertEquals(1, campus.getTelefoonNrs().size());
 		assertTrue(campus.getTelefoonNrs().contains(new TelefoonNr("1", false, "")));
 	}
+	
+	// "One-to-many is lazy loading"
+	@Test
+	public void docentenLazyLoaded() {
+		long id = idVanNieuweCampus();
+		manager.createNativeQuery("insert into docenten(voornaam,familienaam,wedde,emailAdres,geslacht,campusId)"
+				+ " values('test','test',1000,'test@fietsacademy.be','MAN',:campusId)").setParameter("campusId", id).executeUpdate();
+		Campus campus = repository.read(id).get();
+		/*
+		 * Als je de test uitvoert, zie je in het venster Console dat JPA bij bovenstaande enkel een record uit de table campussen leest.
+		 * JPA leest pas bij het statement hieronder de records uit de table docenten die bij de campus horen.
+		 */
+		assertEquals(1, campus.getDocenten().size());
+		assertEquals("test", campus.getDocenten().stream().findFirst().get().getVoornaam());
+	}
 }

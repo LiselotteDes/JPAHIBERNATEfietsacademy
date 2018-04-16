@@ -2,6 +2,7 @@ package be.vdab.fietsacademy.entities;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
@@ -14,7 +15,7 @@ import be.vdab.fietsacademy.valueobjects.Adres;
 
 public class DocentTest {
 	private static final BigDecimal ORIGINELE_WEDDE = BigDecimal.valueOf(200);
-	private Docent docent1, docent2;
+	private Docent docent1, nogEensDocent1, docent2;
 	private Campus campus1;
 	
 	@Before
@@ -27,7 +28,10 @@ public class DocentTest {
 		 * laat de Set<Docent> in het Campus object niet meerdere keren nieuwe Docent objecten toe.
 		 */
 		docent2 = new Docent("test2", "test2", ORIGINELE_WEDDE, "test2@fietsacademy.be", Geslacht.MAN);	
+		// Om equals en hashCode ten gronde te kunnen testen:
+		nogEensDocent1 = new Docent("test", "test", ORIGINELE_WEDDE, "test@fietsacademy.be", Geslacht.MAN);
 	}
+	
 	@Test
 	public void opslag() {
 		docent1.opslag(BigDecimal.TEN);
@@ -93,5 +97,41 @@ public class DocentTest {
 		assertEquals(1, docent1.getBijnamen().size());
 		// *** de set bevat nog steeds de toegevoegde bijnaam die niet verwijderd werd
 		assertTrue(docent1.getBijnamen().contains("test"));
+	}
+	
+	/*
+	 * "One-to-many associatie: Set en de methods equals en hashcode"
+	 * *** Test die aantoont dat een Set met objecten die een equals/hashcode method gebaseerd op id, niet meerdere objecten kan bevatten ***
+	 */
+	@Test
+	public void eenCampusKanMeerdereDocentenBevatten() {
+		assertTrue(campus1.addDocent(docent1));
+		assertTrue(campus1.addDocent(docent2));
+		/*
+		 * Deze test mislukt op de 2° assertTrue: Java beslist op basis van de equals method in Docent dat er al eenzelfde docent aanwezig is in de Set in Campus:
+		 * die geeft aan dat docent2 gelijk is aan docent1: ze hebben beiden 0 als id.
+		 */
+	}
+	
+	// *** equals en hashCode ten gronde testen ***
+	@Test
+	public void docentenZijnGelijkAlsHunEmailAdressenGelijkZijn() {
+		assertEquals(docent1, nogEensDocent1);
+	}
+	@Test
+	public void docentenZijnVerschillendAlsHunEmailAdressenVerschillen() {
+		assertNotEquals(docent1, docent2);
+	}
+	@Test
+	public void eenDocentVerschiltVanNull() {
+		assertNotEquals(docent1, null);
+	}
+	@Test
+	public void eenDocentVerschiltVanEenAnderTypeObject() {
+		assertNotEquals(docent1, "");
+	}
+	@Test
+	public void gelijkeDocentenGevenDezelfdeHashCode() {
+		assertEquals(docent1.hashCode(), nogEensDocent1.hashCode());
 	}
 }
