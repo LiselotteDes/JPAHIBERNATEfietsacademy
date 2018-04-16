@@ -53,14 +53,18 @@ public class Campus implements Serializable {
 	 * "One-to-many associatie"
 	 * 
 	 * @OneToMany 	staat bij een variabele die een one-to-many associatie voorstelt.
+	 * 				"Bidirectionele associate": De parameter mappedBy komt erbij. 
+	 * 				Deze bevat de naam van de variabele (campus), die in de entity class aan de many kant van de associatie (Docent) de associatie voorstelt.
 	 * @JoinColumn	Bij de variabele docenten hoort de table docenten.
 	 * 				@JoinColumn duidt in die table de foreign key kolom aan die verwijst naar de primary key van de table (campussen), 
 	 * 				die hoort bij de huidige class (Campus).
+	 * 				"Bidirectionele associatie": Je mag deze regel verwijderen.
+	 * 				JPA vindt deze informatie reeds in @JoinColumn bij de variabele campus in Docent (de entity class aan de many-kant van de associatie).
 	 * @OrderBy		definieert de volgorde waarmee JPA de Docent entities aan de many kant leest uit de database.
 	 * 				Je vermeldt de naam van één of meerdere private variabelen die horen bij de kolom(men) waarop je wil sorteren.
 	 */
-	@OneToMany
-	@JoinColumn(name = "campusid")
+	@OneToMany(mappedBy = "campus")
+//	@JoinColumn(name = "campusid")
 	@OrderBy("voornaam, familienaam")
 	private Set<Docent> docenten;
 	
@@ -101,7 +105,18 @@ public class Campus implements Serializable {
 		if (docent == null) {
 			throw new NullPointerException();
 		}
-		return docenten.add(docent);
+//		return docenten.add(docent);
+		
+		// Code bijgevoegd voor de "Bidirectionele associatie"
+		boolean toegevoegd = docenten.add(docent);
+		Campus oudeCampus = docent.getCampus();
+		if (oudeCampus != null && oudeCampus != this) {
+			oudeCampus.docenten.remove(docent);
+		}
+		if (oudeCampus != this) {
+			docent.setCampus(this);
+		}
+		return toegevoegd;	// Einde code "Bidirectionele associatie"
 	}
 	
 	// equals & hashcode gebaseerd op naam

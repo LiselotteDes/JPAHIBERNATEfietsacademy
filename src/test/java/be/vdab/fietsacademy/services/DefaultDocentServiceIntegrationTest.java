@@ -51,12 +51,13 @@ public class DefaultDocentServiceIntegrationTest {
 	private DocentRepository repository;
 	@Autowired
 	private EntityManager manager;
+	
 	@Test
 	public void opslag() {
 		Campus campus = new Campus("test", new Adres("test", "test", "test", "test"));
 		manager.persist(campus);
-		Docent docent = new Docent("test", "test", BigDecimal.valueOf(200), "test@fietsacademy.be", Geslacht.MAN/*, campus*/);
-		campus.addDocent(docent);	// "One-to-many associatie"
+		Docent docent = new Docent("test", "test", BigDecimal.valueOf(200), "test@fietsacademy.be", Geslacht.MAN, campus);
+//		campus.addDocent(docent);	// "One-to-many associatie"		// verwijderd in "bidirectionele associatie"
 		repository.create(docent);
 		long id = docent.getId();	// create gebruikt persist method van de EntityManager, waardoor JPA zelf het id variabele van het object invult.
 		/*

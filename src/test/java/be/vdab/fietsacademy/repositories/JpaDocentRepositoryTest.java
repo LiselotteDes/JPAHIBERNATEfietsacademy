@@ -48,8 +48,8 @@ public class JpaDocentRepositoryTest {
 	@Before
 	public void before() {
 		campus = new Campus("test", new Adres("test", "test", "test", "test"));
-		docent = new Docent("test", "test", BigDecimal.TEN, "test@fietsacademy.be", Geslacht.MAN/*, campus*/);
-		campus.addDocent(docent);
+		docent = new Docent("test", "test", BigDecimal.TEN, "test@fietsacademy.be", Geslacht.MAN, campus);
+//		campus.addDocent(docent);	// verwijderd: "Bidirectionele associatie"
 	}
 	
 	// *** PRIVATE METHODS ***
@@ -281,14 +281,14 @@ public class JpaDocentRepositoryTest {
 											.getSingleResult());
 	}
 	// "many-to-one associatie": *** test die aantoont dat lazy loading werkt ***
-//	@Test
-//	public void campusLazyLoaded() {
-//		// JPA leest enkel een record uit de table docenten
-//		Docent docent = repository.read(idVanNieuweMan()).get();
-//		/*
-//		 * Je spreekt nu de campus aan die bij de docent hoort. 
-//		 * JPA leest nu het bijbehorende record uit de table campussen.
-//		 */
-//		assertEquals("test", docent.getCampus().getNaam());	
-//	}
+	@Test
+	public void campusLazyLoaded() {
+		// JPA leest enkel een record uit de table docenten
+		Docent docent = repository.read(idVanNieuweMan()).get();
+		/*
+		 * Je spreekt nu de campus aan die bij de docent hoort. 
+		 * JPA leest nu het bijbehorende record uit de table campussen.
+		 */
+		assertEquals("test", docent.getCampus().getNaam());	
+	}
 }

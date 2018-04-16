@@ -16,20 +16,21 @@ import be.vdab.fietsacademy.valueobjects.Adres;
 public class DocentTest {
 	private static final BigDecimal ORIGINELE_WEDDE = BigDecimal.valueOf(200);
 	private Docent docent1, nogEensDocent1, docent2;
-	private Campus campus1;
+	private Campus campus1, campus2;
 	
 	@Before
 	public void before() {
 		campus1 = new Campus("test", new Adres("test", "test", "test", "test"));
-		docent1 = new Docent("test", "test", ORIGINELE_WEDDE, "test@fietsacademy.be", Geslacht.MAN/*, campus1*/);
+		campus2 = new Campus("test2", new Adres("test2", "test2", "test2", "test2"));
+		docent1 = new Docent("test", "test", ORIGINELE_WEDDE, "test@fietsacademy.be", Geslacht.MAN, campus1);
 		/*
 		 * "one-to-many associatie" aantonen dat equals en hashcode gebaseerd op id niet werken: 
 		 * Gezien als deze Docent objecten als id 0 hebben,
 		 * laat de Set<Docent> in het Campus object niet meerdere keren nieuwe Docent objecten toe.
 		 */
-		docent2 = new Docent("test2", "test2", ORIGINELE_WEDDE, "test2@fietsacademy.be", Geslacht.MAN);	
+		docent2 = new Docent("test2", "test2", ORIGINELE_WEDDE, "test2@fietsacademy.be", Geslacht.MAN, campus1);	
 		// Om equals en hashCode ten gronde te kunnen testen:
-		nogEensDocent1 = new Docent("test", "test", ORIGINELE_WEDDE, "test@fietsacademy.be", Geslacht.MAN);
+		nogEensDocent1 = new Docent("test", "test", ORIGINELE_WEDDE, "test@fietsacademy.be", Geslacht.MAN, campus1);
 	}
 	
 	@Test
@@ -105,12 +106,17 @@ public class DocentTest {
 	 */
 	@Test
 	public void eenCampusKanMeerdereDocentenBevatten() {
-		assertTrue(campus1.addDocent(docent1));
-		assertTrue(campus1.addDocent(docent2));
+//		assertTrue(campus1.addDocent(docent1));
+//		assertTrue(campus1.addDocent(docent2));
 		/*
-		 * Deze test mislukt op de 2° assertTrue: Java beslist op basis van de equals method in Docent dat er al eenzelfde docent aanwezig is in de Set in Campus:
+		 * De voorgaande test mislukt op de 2° assertTrue als equals/hashcode op id gebaseerd zijn: 
+		 * Java beslist op basis van de equals method in Docent dat er al eenzelfde docent aanwezig is in de Set in Campus:
 		 * die geeft aan dat docent2 gelijk is aan docent1: ze hebben beiden 0 als id.
 		 */
+		
+		// "Bidirectionele associatie"
+		assertTrue(campus1.getDocenten().contains(docent1));
+		assertTrue(campus1.getDocenten().contains(docent2));
 	}
 	
 	// *** equals en hashCode ten gronde testen ***
@@ -133,5 +139,21 @@ public class DocentTest {
 	@Test
 	public void gelijkeDocentenGevenDezelfdeHashCode() {
 		assertEquals(docent1.hashCode(), nogEensDocent1.hashCode());
+	}
+	
+	// *** Bidirectionele associatie (vanuit het standpunt van Docent) ***
+	@Test
+	public void docent1MoetOokVoorkomenInSetVanCampus1() {
+		assertEquals(docent1.getCampus(), campus1);
+		assertEquals(2, campus1.getDocenten().size());
+		assertTrue(campus1.getDocenten().contains(docent1));
+	}
+	@Test
+	public void docent1VerhuistVanCampus1NaarCampus2() {
+		docent1.setCampus(campus2);
+		assertEquals(docent1.getCampus(), campus2);
+		assertEquals(1, campus1.getDocenten().size());
+		assertEquals(1, campus2.getDocenten().size());
+		assertTrue(campus2.getDocenten().contains(docent1));
 	}
 }

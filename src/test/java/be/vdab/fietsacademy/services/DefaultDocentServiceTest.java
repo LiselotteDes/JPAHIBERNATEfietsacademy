@@ -26,7 +26,7 @@ public class DefaultDocentServiceTest {
 	@Before
 	public void before() {
 		Campus campus  = new Campus("test", new Adres("test", "test", "test", "test"));
-		docent = new Docent("test", "test", BigDecimal.valueOf(100), "test@fietsacademy.be", Geslacht.MAN/*, campus*/);
+		docent = new Docent("test", "test", BigDecimal.valueOf(100), "test@fietsacademy.be", Geslacht.MAN, campus);
 		repository = mock(DocentRepository.class);
 		when(repository.read(1)).thenReturn(Optional.of(docent));
 		when(repository.read(-1)).thenReturn(Optional.empty());
