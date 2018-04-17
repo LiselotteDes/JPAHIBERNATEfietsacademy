@@ -19,6 +19,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
@@ -91,6 +92,13 @@ public class Docent implements Serializable {
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "campusid")
 	private Campus campus;
+	/*
+	 * "Many-to-many associatie"
+	 * @ManyToMany staat bij een variabele die een many-to-many associatie voorstelt.
+	 * > mappadBy bevat de variabele naam (docenten), die aan de andere associatie kant (Verantwoordelijkheid), de associatie voorstelt.
+	 */
+	@ManyToMany(mappedBy = "docenten")
+	Set<Verantwoordelijkheid> verantwoordelijkheden = new LinkedHashSet<>();
 	
 	// *** CONSTRUCTORS **
 	
@@ -221,5 +229,28 @@ public class Docent implements Serializable {
 		// Juist: gebaseerd op emailadres.
 		// Je maakt bij het bepalen van de hashCode geen onderscheid tussen kleine en hoofdletters.
 		return emailAdres == null ? 0 : emailAdres.toLowerCase().hashCode();
+	}
+	
+	// "Many-to-many associatie"
+	
+	public boolean add(Verantwoordelijkheid verantwoordelijkheid) {
+//		throw new UnsupportedOperationException();
+		boolean toegevoegd = verantwoordelijkheden.add(verantwoordelijkheid);
+		if (! verantwoordelijkheid.getDocenten().contains(this)) {
+			verantwoordelijkheid.add(this);
+		}
+		return toegevoegd;
+	}
+	public boolean remove(Verantwoordelijkheid verantwoordelijkheid) {
+//		throw new UnsupportedOperationException();
+		boolean verwijderd = verantwoordelijkheden.remove(verantwoordelijkheid);
+		if (verantwoordelijkheid.getDocenten().contains(this)) {
+			verantwoordelijkheid.remove(this);
+		}
+		return verwijderd;
+	}
+	public Set<Verantwoordelijkheid> getVerantwoordelijkheden() {
+//		throw new UnsupportedOperationException();
+		return Collections.unmodifiableSet(verantwoordelijkheden);
 	}
 }

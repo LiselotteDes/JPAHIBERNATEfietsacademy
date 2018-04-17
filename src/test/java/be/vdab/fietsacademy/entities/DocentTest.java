@@ -17,6 +17,7 @@ public class DocentTest {
 	private static final BigDecimal ORIGINELE_WEDDE = BigDecimal.valueOf(200);
 	private Docent docent1, nogEensDocent1, docent2;
 	private Campus campus1, campus2;
+	private Verantwoordelijkheid verantwoordelijkheid1;
 	
 	@Before
 	public void before() {
@@ -31,8 +32,11 @@ public class DocentTest {
 		docent2 = new Docent("test2", "test2", ORIGINELE_WEDDE, "test2@fietsacademy.be", Geslacht.MAN, campus1);	
 		// Om equals en hashCode ten gronde te kunnen testen:
 		nogEensDocent1 = new Docent("test", "test", ORIGINELE_WEDDE, "test@fietsacademy.be", Geslacht.MAN, campus1);
+		// "Many-to-many associatie"
+		verantwoordelijkheid1 = new Verantwoordelijkheid("EHBO");
 	}
 	
+	// "Entity wijzigen": *** method opslag ***
 	@Test
 	public void opslag() {
 		docent1.opslag(BigDecimal.TEN);
@@ -155,5 +159,33 @@ public class DocentTest {
 		assertEquals(1, campus1.getDocenten().size());
 		assertEquals(1, campus2.getDocenten().size());
 		assertTrue(campus2.getDocenten().contains(docent1));
+	}
+	
+	// "Many-to-many associatie"
+	@Test
+	public void verantwoordelijkheidToevoegen() {
+		// *** Er zijn nog geen verantwoordelijkheden voor het Docent object ***
+		assertTrue(docent1.getVerantwoordelijkheden().isEmpty());
+		// *** Er kan een verantwoordelijkheid toegevoegd worden ***
+		assertTrue(docent1.add(verantwoordelijkheid1));
+		// *** Docent object heeft juiste aantal verantwoordelijkheden ***
+		assertEquals(1, docent1.getVerantwoordelijkheden().size());
+		// *** In de verantwoordelijkheden van het Docent object bevindt zich de toegevoegde verantwoordelijkheid ***
+		assertTrue(docent1.getVerantwoordelijkheden().contains(verantwoordelijkheid1));
+		// *** Verantwoordelijkheid object heeft juiste aantal docenten ***
+		assertEquals(1, verantwoordelijkheid1.getDocenten().size());
+		// *** In de docenten van het Verantwoordelijkheid object bevindt zich dit Docent object ***
+		assertTrue(verantwoordelijkheid1.getDocenten().contains(docent1));
+	}
+	@Test
+	public void verantwoordelijkheidVerwijderen() {
+		// *** Er kan een verantwoordelijkheid toegevoegd worden ***
+		assertTrue(docent1.add(verantwoordelijkheid1));
+		// *** De verantwoordelijkheid kan terug verwijderd worden ***
+		assertTrue(docent1.remove(verantwoordelijkheid1));
+		// *** De Set verantwoordelijkheden van het Docent object is terug leeg ***
+		assertTrue(docent1.getVerantwoordelijkheden().isEmpty());
+		// *** De Set docenten van het toegevoegde/verwijderde Verantwoordelijkheid object is terug leeg ***
+		assertTrue(verantwoordelijkheid1.getDocenten().isEmpty());
 	}
 }

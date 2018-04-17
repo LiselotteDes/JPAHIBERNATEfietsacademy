@@ -22,6 +22,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import be.vdab.fietsacademy.entities.Campus;
 import be.vdab.fietsacademy.entities.Docent;
+import be.vdab.fietsacademy.entities.Verantwoordelijkheid;
 import be.vdab.fietsacademy.enums.Geslacht;
 import be.vdab.fietsacademy.valueobjects.AantalDocentenPerWedde;
 import be.vdab.fietsacademy.valueobjects.Adres;
@@ -290,5 +291,46 @@ public class JpaDocentRepositoryTest {
 		 * JPA leest nu het bijbehorende record uit de table campussen.
 		 */
 		assertEquals("test", docent.getCampus().getNaam());	
+	}
+	// "Many-to-many associatie"
+	@Test
+	public void verantwoordelijkhedenLezen() {
+		// id van toegevoegd record in docenten verkrijgen
+		long docentId = idVanNieuweMan();
+		// verantwoordelijkheden record toevoegen in de database
+		manager.createNativeQuery("insert into verantwoordelijkheden(naam) values('test')").executeUpdate();
+		// id van toegevoegd record in verantwoordelijkheden verkrijgen
+		long verantwoordelijkheidId = ((Number) manager.createNativeQuery("select id from verantwoordelijkheden where naam='test'").getSingleResult()).longValue();
+		// docentenverantwoordelijkheden record toevoegen in de database
+		manager.createNativeQuery("insert into docentenverantwoordelijkheden(docentId,verantwoordelijkheidId) values(:docentId,:verantwoordelijkheidId)")
+			.setParameter("docentId", docentId)
+			.setParameter("verantwoordelijkheidId", verantwoordelijkheidId)
+			.executeUpdate();
+		// Een Docent object lezen uit de database met het verkregen id
+		Docent docent = repository.read(docentId).get();
+		// *** juiste aantal verantwoordelijkheden bij het Docent object ***
+		assertEquals(1, docent.getVerantwoordelijkheden().size());
+		// *** verantwoordelijkheden in Docent object bevat de juiste verantwoordelijkheid ***
+		assertTrue(docent.getVerantwoordelijkheden().contains(new Verantwoordelijkheid("test")));
+	}
+	@Test
+	public void verantwoordelijkheidToevoegen() {
+		// nieuw Verantwoordelijkheid object maken
+		Verantwoordelijkheid verantwoordelijkheid = new Verantwoordelijkheid("test");
+		
+		// object opslaan in de db
+		manager.persist(verantwoordelijkheid);
+		// private variabele campus opslaan in de db
+		manager.persist(campus);
+		// private variabele docent opslaan in de db
+		repository.create(docent);
+		
+		// Verantwoordelijkheid toevoegen aan Docent object
+		docent.add(verantwoordelijkheid);
+		
+		// *** de toegevoegde Verantwoordelijkheid (aan docent) is in de database toegevoegd aan de table docentenverantwoordelijkheden ***
+		assertEquals(verantwoordelijkheid.getId(),
+					((Number) manager.createNativeQuery("select verantwoordelijkheidId from docentenverantwoordelijkheden where docentId = :id")
+						.setParameter("id", docent.getId()).getSingleResult()).longValue());
 	}
 }
