@@ -45,8 +45,8 @@ class JpaDocentRepository implements DocentRepository {
 	public List<Docent> findAll() {
 //		throw new UnsupportedOperationException();
 		return manager
-				.createQuery("select d from Docent d order by d.wedde", Docent.class)	// retourneert TypedQuery<Docent>
-				.getResultList();														// retourneert List<Docent>
+				.createQuery("select d from Docent d order by d.wedde", Docent.class)						// retourneert TypedQuery<Docent>
+				.getResultList();																			// retourneert List<Docent>
 	}
 	@Override
 	public List<Docent> findByWeddeBetween(BigDecimal van, BigDecimal tot) {
@@ -57,6 +57,21 @@ class JpaDocentRepository implements DocentRepository {
 				.createNamedQuery("Docent.findByWeddeBetween", Docent.class)								// retourneert TypedQuery<Docent>
 				.setParameter("van", van)																	// retourneert TypedQuery<Docent>
 				.setParameter("tot", tot)																	// retourneert TypedQuery<Docent>
+				// "Entity Graph"
+				/*
+				 * Je geeft een hint aan JPA. JPA past deze hint toe bij het uitvoeren van de query.
+				 * Elke hint heeft een naam. De hint om bij het uitvoeren van een query rekening te houden
+				 * met de behoeft beschreven met @NamedEntityGraph is javax.persistence.loadgraph.
+				 */
+				.setHint("javax.persistence.loadgraph", 													// retourneert TypedQuery<Docent>
+						/*
+						 * Je specifieert de named entity graph die je (met @NamedEntityGraph)
+						 * definieerde onder de naam Docent.metCampus.
+						 * JPA ziet in die entity graph de behoefte om bij het lezen van een Docent
+						 * de direct gerelateerde Campus te lezen en vertaalt de named query 
+						 * naar een SQL select statement.
+						 */
+						manager.createEntityGraph(Docent.MET_CAMPUS))										// (retourneert EntityGraph<?>)							
 				.getResultList();																			// retourneert List<Docent>
 	}
 	@Override
@@ -91,8 +106,8 @@ class JpaDocentRepository implements DocentRepository {
 	public int algemeneOpslag(BigDecimal percentage) {
 //		throw new UnsupportedOperationException();
 		BigDecimal factor = BigDecimal.ONE.add(percentage.divide(BigDecimal.valueOf(100)));
-		return manager.createNamedQuery("Docent.algemeneOpslag")	// retourneert Query
-				.setParameter("factor", factor)						// retourneert Query
-				.executeUpdate();									// retourneert int
+		return manager.createNamedQuery("Docent.algemeneOpslag")											// retourneert Query
+				.setParameter("factor", factor)																// retourneert Query
+				.executeUpdate();																			// retourneert int
 	}
 }

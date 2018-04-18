@@ -21,6 +21,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedAttributeNode;
+import javax.persistence.NamedEntityGraph;
 import javax.persistence.Table;
 
 import be.vdab.fietsacademy.enums.Geslacht;
@@ -37,6 +39,15 @@ import be.vdab.fietsacademy.enums.Geslacht;
  */
 @Entity
 @Table(name = "docenten")
+/*
+ * "Entity Graph"
+ * @NamedEntityGraph: Schrijf je voor de entity class die de behoefte heeft om niet enkel die entity te lezen, maar ook een direct geassocieerde entity.
+ * - Elke name entity graph moet een unieke naam hebben.
+ *   De kans daartoe vergroot als je die naam begint met de naam van de huidige class.
+ * - Je vermeldt de naam van de private variabele campus in de huidige class Docent.
+ *   Je drukt zo de behoefte uit dat bij het lezen van een Docent entity uit de database, JPA direct ook de bijbehorende Camus entity moet lezen (via een join).
+ */
+@NamedEntityGraph(name = Docent.MET_CAMPUS, attributeNodes = @NamedAttributeNode("campus"))
 /*
  * JPA raadt aan dat de class Serializable implementeert.
  * Dit is NIET noodzakelijk voor de samenwerking met de database.
@@ -99,6 +110,8 @@ public class Docent implements Serializable {
 	 */
 	@ManyToMany(mappedBy = "docenten")
 	Set<Verantwoordelijkheid> verantwoordelijkheden = new LinkedHashSet<>();
+	// "Entity Graph: Refactoring"
+	public static final String MET_CAMPUS = "Docent.metCampus";		// ! PUBLIC CONSTANTE
 	
 	// *** CONSTRUCTORS **
 	
