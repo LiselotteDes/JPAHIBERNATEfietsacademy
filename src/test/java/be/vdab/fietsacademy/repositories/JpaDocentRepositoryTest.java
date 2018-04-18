@@ -333,4 +333,18 @@ public class JpaDocentRepositoryTest {
 					((Number) manager.createNativeQuery("select verantwoordelijkheidId from docentenverantwoordelijkheden where docentId = :id")
 						.setParameter("id", docent.getId()).getSingleResult()).longValue());
 	}
+	
+	// "N + 1 probleem"
+	/*
+	 * Volgende test simuleert de situatie waarbij je in een website de docenten van-tot wedde toont.
+	 * Je roept daarbij de method findByWeddeBetween op.
+	 * Je beslist in de JSP naast de naam en de wedde van de docent ook zijn campusnaam te tonen.
+	 */
+	@Test
+	public void nPlus1Probleem() {
+		idVanNieuweMan();
+		List<Docent> docenten = repository.findByWeddeBetween(BigDecimal.ZERO, BigDecimal.valueOf(1_000_000));
+		
+		docenten.forEach(docent -> System.out.println(docent.getFamilienaam() + ':' + docent.getWedde() + ' ' + docent.getCampus().getNaam()));
+	}
 }

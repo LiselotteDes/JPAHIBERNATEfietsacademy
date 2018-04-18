@@ -5,7 +5,7 @@
 	version="2.1">
 	<named-query name="Docent.findByWeddeBetween">
 		<query>
-			select d from Docent d
+			select d from Docent d join fetch d.campus
 			where d.wedde between :van and :tot
 			order by d.wedde, d.id
 		</query>
