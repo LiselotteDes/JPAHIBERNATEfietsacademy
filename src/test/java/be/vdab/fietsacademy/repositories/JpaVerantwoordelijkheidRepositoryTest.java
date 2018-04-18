@@ -39,6 +39,8 @@ public class JpaVerantwoordelijkheidRepositoryTest {
 		return ((Number) manager.createNativeQuery("select id from verantwoordelijkheden where naam='test'").getSingleResult()).longValue();
 	}
 	
+	// *** Interface methods testen ***
+	
 	@Test
 	public void read() {
 		Verantwoordelijkheid verantwoordelijkheid = repository.read(idVanNieuweVerantwoordelijkheid()).get();
@@ -53,6 +55,8 @@ public class JpaVerantwoordelijkheidRepositoryTest {
 		
 		assertEquals("test", (String) (manager.createNativeQuery("select naam from verantwoordelijkheden where id = :id").setParameter("id", id).getSingleResult()));
 	}
+	
+	// *** Omdat Verantwoordelijkheid deel uitmaakt van een many-to-many associatie met Docent ook volgende tests. ***
 	
 	@Test
 	public void docentenLezen() {
