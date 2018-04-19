@@ -111,7 +111,7 @@ public class Docent implements Serializable {
 	@ManyToMany(mappedBy = "docenten")
 	Set<Verantwoordelijkheid> verantwoordelijkheden = new LinkedHashSet<>();
 	// "Entity Graph: Refactoring"
-	public static final String MET_CAMPUS = "Docent.metCampus";		// ! PUBLIC CONSTANTE
+	public static final String MET_CAMPUS = "Docent.metCampus";		 // ! PUBLIC CONSTANTE
 	
 	// *** CONSTRUCTORS **
 	

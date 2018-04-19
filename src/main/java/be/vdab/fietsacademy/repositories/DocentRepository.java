@@ -29,4 +29,6 @@ public interface DocentRepository {
 	List<AantalDocentenPerWedde> findAantalDocentenPerWedde();
 	// "Bulk updates"
 	int algemeneOpslag(BigDecimal percentage);
+	// "Pessimistic record locking"
+	Optional<Docent> readWithLock(long id);
 }
