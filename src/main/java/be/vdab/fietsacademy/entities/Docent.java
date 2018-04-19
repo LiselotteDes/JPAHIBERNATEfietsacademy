@@ -24,6 +24,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedAttributeNode;
 import javax.persistence.NamedEntityGraph;
 import javax.persistence.Table;
+import javax.persistence.Version;
 
 import be.vdab.fietsacademy.enums.Geslacht;
 
@@ -112,6 +113,12 @@ public class Docent implements Serializable {
 	Set<Verantwoordelijkheid> verantwoordelijkheden = new LinkedHashSet<>();
 	// "Entity Graph: Refactoring"
 	public static final String MET_CAMPUS = "Docent.metCampus";		 // ! PUBLIC CONSTANTE
+	// "Optimistic record locking"
+	/*
+	 * Je tikt @Version voor de private variabele die hoort bij de kolom die JPA kan gebruiken voor de versie controle.
+	 */
+	@Version
+	private long versie;	// "Versie kolom met een geheel getal"
 	
 	// *** CONSTRUCTORS **
 	

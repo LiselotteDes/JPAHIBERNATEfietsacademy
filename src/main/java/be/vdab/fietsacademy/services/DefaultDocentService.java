@@ -21,8 +21,8 @@ class DefaultDocentService implements DocentService {
 	@Transactional(readOnly = false, isolation = Isolation.READ_COMMITTED)
 	public void opslag(long id, BigDecimal percentage) {
 		// Je wijzigt een entity in twee stappen: eerst lees je de te wijzigen entity
-//		Optional<Docent> optionalDocent = docentRepository.read(id);
-		Optional<Docent> optionalDocent = docentRepository.readWithLock(id);	// "Pessimistic record locking"
+		Optional<Docent> optionalDocent = docentRepository.read(id);
+//		Optional<Docent> optionalDocent = docentRepository.readWithLock(id);	// "Pessimistic record locking"
 		if (optionalDocent.isPresent()) {
 			// Vervolgens wijzig je de private variabelen van die entity.
 			optionalDocent.get().opslag(percentage);
