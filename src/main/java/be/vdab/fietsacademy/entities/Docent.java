@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
+import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -118,7 +119,8 @@ public class Docent implements Serializable {
 	 * Je tikt @Version voor de private variabele die hoort bij de kolom die JPA kan gebruiken voor de versie controle.
 	 */
 	@Version
-	private long versie;	// "Versie kolom met een geheel getal"
+//	private long versie;		// "Versie kolom met een geheel getal"
+	private Timestamp versie;	// "Versie kolom met een timestamp"
 	
 	// *** CONSTRUCTORS **
 	
